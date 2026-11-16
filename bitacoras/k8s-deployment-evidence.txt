@@ -1,0 +1,69 @@
+﻿=== RECURSOS DESPLEGADOS ===
+NAME                              READY   UP-TO-DATE   AVAILABLE   AGE   CONTAINERS        IMAGES                          SELECTOR
+deployment.apps/catalog-service   1/1     1            1           14m   catalog-service   tata013/catalog-service:1.0.0   app=catalog-service
+
+NAME                                   READY   STATUS    RESTARTS   AGE   IP         NODE             NOMINATED NODE   READINESS GATES
+pod/catalog-service-7745ccfb97-fxrpz   1/1     Running   0          14m   10.1.0.6   docker-desktop   <none>           <none>
+
+NAME                      TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE   SELECTOR
+service/catalog-service   ClusterIP   10.102.23.245   <none>        8080/TCP   14m   app=catalog-service
+service/kubernetes        ClusterIP   10.96.0.1       <none>        443/TCP    44m   <none>
+
+=== DETALLE Y EVENTOS DEL POD ===
+Name:             catalog-service-7745ccfb97-fxrpz
+Namespace:        default
+Priority:         0
+Service Account:  default
+Node:             docker-desktop/192.168.65.3
+Start Time:       Mon, 16 Nov 2026 01:34:07 -0600
+Labels:           app=catalog-service
+                  pod-template-hash=7745ccfb97
+                  version=v1.0.0
+Annotations:      <none>
+Status:           Running
+IP:               10.1.0.6
+IPs:
+  IP:           10.1.0.6
+Controlled By:  ReplicaSet/catalog-service-7745ccfb97
+Containers:
+  catalog-service:
+    Container ID:   docker://ad68f69826b3c527cac9f29a6aa1c54d32366a11c4c7dcfdb7f5dc508a99ba28
+    Image:          tata013/catalog-service:1.0.0
+    Image ID:       docker-pullable://tata013/catalog-service@sha256:f4439952b56dc269f968c1ff47f8f43dda397953373f212ca6bf83424977bace
+    Port:           8080/TCP (http)
+    Host Port:      0/TCP (http)
+    State:          Running
+      Started:      Mon, 16 Nov 2026 01:34:08 -0600
+    Ready:          True
+    Restart Count:  0
+    Liveness:       http-get http://:8080/live delay=10s timeout=2s period=10s #success=1 #failure=3
+    Readiness:      http-get http://:8080/ready delay=5s timeout=2s period=5s #success=1 #failure=2
+    Environment:    <none>
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-2485b (ro)
+Conditions:
+  Type                        Status
+  PodReadyToStartContainers   True 
+  Initialized                 True 
+  Ready                       True 
+  ContainersReady             True 
+  PodScheduled                True 
+Volumes:
+  kube-api-access-2485b:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    Optional:                false
+    DownwardAPI:             true
+QoS Class:                   BestEffort
+Node-Selectors:              <none>
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type     Reason     Age                 From               Message
+  ----     ------     ----                ----               -------
+  Normal   Scheduled  14m                 default-scheduler  Successfully assigned default/catalog-service-7745ccfb97-fxrpz to docker-desktop
+  Normal   Pulled     14m                 kubelet            spec.containers{catalog-service}: Container image "tata013/catalog-service:1.0.0" already present on machine and can be accessed by the pod
+  Normal   Created    14m                 kubelet            spec.containers{catalog-service}: Container created
+  Normal   Started    14m                 kubelet            spec.containers{catalog-service}: Container started
+  Warning  Unhealthy  104s (x9 over 12m)  kubelet            spec.containers{catalog-service}: Readiness probe failed: HTTP probe failed with statuscode: 503
