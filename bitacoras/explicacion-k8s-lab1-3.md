@@ -20,6 +20,10 @@ Pruebas ejecutadas mediante túnel `kubectl port-forward svc/catalog-service 808
   "status": "SUCCESS",
   "data": ["Product A", "Product B", "Product C"]
 }
+```
+
+### `GET /health` y `GET /ready`
+```json
 {
   "status": "UP",
   "checks": [
@@ -29,7 +33,28 @@ Pruebas ejecutadas mediante túnel `kubectl port-forward svc/catalog-service 808
     }
   ]
 }
+```
+
+### `GET /live`
+```json
 {
   "status": "UP",
   "checks": []
 }
+```
+
+---
+
+## 3. Evidencias Visuales del Despliegue
+
+### Imagen publicada en Docker Hub (`1.0.0`)
+![Docker Hub Tag 1.0.0](01-dockerhub-tag.jpeg)
+
+### YAML actualizado y Pod en estado Running (`READY 1/1`)
+![Deployment y Pod Ready](02-k8s-deployment-ready.jpeg)
+
+### Inspección de eventos y Health Checks (`kubectl describe pod`)
+![Describe Pod y Probes](03-k8s-describe-pod.jpeg)
+
+### Respuestas JSON de endpoints y probes
+![Validación JSON Endpoints](04-k8s-endpoints-json.jpeg)
