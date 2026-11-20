@@ -1,21 +1,40 @@
-# Despliegue en Kubernetes y Validación de Health Checks (Lab 1.3)
+# Explicación Técnica Integrada y Validación (Lab 1.3)
 
-## 1. Empaquetado y Publicación en Docker Hub
-* **Imagen generada:** `tata013/catalog-service:1.0.0`
-* **Verificación de registro:** Publicada mediante `docker push` y validada con descarga limpia (`docker pull`) desde Docker Hub.
+## 1. Explicación Técnica Integrada
 
----
+El flujo completo inició con el **build local** mediante Maven y Docker, empaquetando el microservicio resiliente en la imagen `tata013/catalog-service:1.0.0`. Posteriormente, mediante `docker push`, se publicó en **Docker Hub**, dejándola accesible desde cualquier entorno.
 
-## 2. Arquitectura Declarativa en Kubernetes
-Se desplegó el microservicio resiliente (con `@Timeout`, `@Retry`, `@Fallback` y `@CircuitBreaker` del Lab 1.2) mediante manifiestos YAML:
+En **Kubernetes**, el manifiesto `k8s/01-deployment.yaml` declara de forma reproducible qué imagen utilizar y qué sondas de salud ejecutar. Al aplicar los YAML con `kubectl apply`, Kubernetes gestiona la **descarga automática** desde Docker Hub y levanta el contenedor bajo un `Service` `ClusterIP`.
 
-| Recurso | Archivo | Configuración Clave |
-| :--- | :--- | :--- |
-| **Deployment** | `k8s/01-deployment.yaml` | 1 réplica, `imagePullPolicy: IfNotPresent`, sondas HTTP en puerto `8080` |
-| **Service** | `k8s/02-service.yaml` | Tipo `ClusterIP`, exposición interna `8080/TCP` |
+A diferencia del **Lab 1.1**, donde `/health`, `/ready` y `/live` se validaban manualmente con `curl`, en el **Lab 1.3** Kubernetes realiza **health checks automáticos**: `/ready` verifica cada 5 segundos si el pod puede recibir tráfico y `/live` comprueba cada 10 segundos si el proceso sigue activo. Esta transición pedagógica es clave en pipelines CI/CD profesionales, pues permite al orquestador aislar o reiniciar pods degradados automáticamente sin intervención manual (`Build local → Push a registry → Deploy → Validación automática`).
 
 ---
 
-## 3. Análisis de Health Checks Automatizados
-* **`livenessProbe` (`/live`):** Mantuvo el contenedor activo con `0` reinicios (`Restart Count: 0`).
-* **`readinessProbe` (`/ready`):** Ante fallos simulados de conexión a base de datos (`HTTP 503`), Kubernetes retiró temporalmente el pod del balanceo de tráfico sin reiniciar el contenedor, restaurando el estado `Ready: True` automáticamente en cuanto la siguiente sonda tuvo éxito.
+## 2. Validación de Funcionamiento del Servicio (Endpoints)
+
+Pruebas ejecutadas mediante túnel `kubectl port-forward svc/catalog-service 8085:8080`:
+
+* **`GET /v1/products`:**
+  ```json
+  {
+    "status": "SUCCESS",
+    "data": ["Product A", "Product B", "Product C"]
+  }
+
+
+  {
+  "status": "UP",
+  "checks": [
+    {
+      "name": "catalog-database-check",
+      "status": "UP"
+    }
+  ]
+}
+
+
+
+{
+  "status": "UP",
+  "checks": []
+}
